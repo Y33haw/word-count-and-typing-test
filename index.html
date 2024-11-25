@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Counter & Typing Speed Test</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f9f9f9, #e6f7ff);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            width: 90%;
+            max-width: 600px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .container h2 {
+            margin-top: 0;
+            font-size: 24px;
+            color: #00509e;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #cce7ff;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+            resize: none;
+        }
+        button {
+            background-color: #0077cc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #005fa3;
+        }
+        select {
+            padding: 10px;
+            border-radius: 10px;
+            border: 2px solid #cce7ff;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .results {
+            margin-top: 15px;
+            font-size: 18px;
+            color: #333;
+        }
+        .typing-test-area {
+            border: 2px dashed #0077cc;
+            padding: 10px;
+            text-align: center;
+            border-radius: 10px;
+        }
+        .highlight {
+            background-color: #cce7ff;
+            padding: 3px 5px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Word Counter</h2>
+        <textarea id="wordCounterInput" rows="5" placeholder="Type or paste text here..."></textarea>
+        <div class="results" id="wordCountResult">Word count: 0</div>
+    </div>
+
+    <div class="container">
+        <h2>Typing Speed Test</h2>
+        <label for="timeLimit">Choose a time limit:</label>
+        <select id="timeLimit">
+            <option value="5">5 seconds</option>
+            <option value="10">10 seconds</option>
+            <option value="20">20 seconds</option>
+            <option value="30">30 seconds</option>
+            <option value="60">1 minute</option>
+            <option value="120">2 minutes</option>
+            <option value="300">5 minutes</option>
+        </select>
+        <div class="typing-test-area">
+            <p id="typingPrompt" class="highlight">Click "Start Test" to begin typing...</p>
+        </div>
+        <textarea id="typingInput" rows="3" disabled placeholder="Type here when the test starts..."></textarea>
+        <button id="startTest">Start Test</button>
+        <div class="results" id="liveTypingSpeed">Live typing speed: 0 WPM</div>
+        <div class="results" id="finalTypingSpeed">Final typing speed: -- WPM</div>
+        <div class="results" id="timeLeft">Time left: -- seconds</div>
+    </div>
+
+    <script>
+        // Word Counter
+        const wordCounterInput = document.getElementById('wordCounterInput');
+        const wordCountResult = document.getElementById('wordCountResult');
+
+        wordCounterInput.addEventListener('input', () => {
+            const text = wordCounterInput.value.trim();
+            const words = text ? text.split(/\s+/).length : 0;
+            wordCountResult.textContent = `Word count: ${words}`;
+        });
+
+        // Typing Speed Test
+        const typingPrompt = document.getElementById('typingPrompt');
+        const typingInput = document.getElementById('typingInput');
+        const startTestButton = document.getElementById('startTest');
+        const liveTypingSpeed = document.getElementById('liveTypingSpeed');
+        const finalTypingSpeed = document.getElementById('finalTypingSpeed');
+        const timeLeftDisplay = document.getElementById('timeLeft');
+        const timeLimitSelect = document.getElementById('timeLimit');
+
+        let timeLimit = 0;
+        let timer, startTime, wordsTyped, interval;
+
+        const sampleText = "Practice typing this text as fast as you can!";
+
+        startTestButton.addEventListener('click', () => {
+            timeLimit = parseInt(timeLimitSelect.value);
+            typingPrompt.textContent = sampleText;
+            typingInput.value = '';
+            typingInput.disabled = false;
+            typingInput.focus();
+
+            wordsTyped = 0;
+            startTime = Date.now();
+            timeLeftDisplay.textContent = `Time left: ${timeLimit} seconds`;
+            liveTypingSpeed.textContent = "Live typing speed: 0 WPM";
+            finalTypingSpeed.textContent = "Final typing speed: -- WPM";
+
+            // Timer
+            clearInterval(timer);
+            clearInterval(interval);
+            timer = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const remaining = timeLimit - elapsed;
+                timeLeftDisplay.textContent = `Time left: ${remaining} seconds`;
+
+                if (remaining <= 0) {
+                    clearInterval(timer);
+                    clearInterval(interval);
+                    typingInput.disabled = true;
+                    const totalTime = (timeLimit * 1000) / 1000;
+                    const finalSpeed = Math.round((wordsTyped / totalTime) * 60);
+                    finalTypingSpeed.textContent = `Final typing speed: ${finalSpeed} WPM`;
+                }
+            }, 1000);
+
+            // Live Typing Speed
+            interval = setInterval(() => {
+                const elapsed = (Date.now() - startTime) / 1000;
+                const typedWords = typingInput.value.trim().split(/\s+/).length;
+                const speed = Math.round((typedWords / elapsed) * 60);
+                wordsTyped = typedWords;
+                liveTypingSpeed.textContent = `Live typing speed: ${speed} WPM`;
+            }, 500);
+        });
+    </script>
+</body>
+</html>
