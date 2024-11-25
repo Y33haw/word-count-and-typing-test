@@ -17,6 +17,22 @@
             min-height: 100vh;
             flex-direction: column;
         }
+        h1 {
+            font-size: 36px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            animation: colorChange 5s infinite;
+            background-clip: text;
+            color: transparent;
+        }
+        @keyframes colorChange {
+            0% { background: linear-gradient(to right, #ff6f61, #6ec1e4); }
+            25% { background: linear-gradient(to right, #6ec1e4, #a29bfe); }
+            50% { background: linear-gradient(to right, #a29bfe, #fdcb6e); }
+            75% { background: linear-gradient(to right, #fdcb6e, #ff6f61); }
+            100% { background: linear-gradient(to right, #ff6f61, #6ec1e4); }
+        }
         .container {
             width: 90%;
             max-width: 600px;
@@ -79,6 +95,7 @@
     </style>
 </head>
 <body>
+    <h1>Word Counter and Typing Test</h1>
     <div class="container">
         <h2>Word Counter</h2>
         <textarea id="wordCounterInput" rows="5" placeholder="Type or paste text here..."></textarea>
